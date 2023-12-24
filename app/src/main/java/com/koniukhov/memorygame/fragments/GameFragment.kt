@@ -4,20 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.koniukhov.memorygame.R
-import com.koniukhov.memorygame.data.GridSize
+import com.koniukhov.memorygame.adapters.CardAdapter
 import com.koniukhov.memorygame.databinding.FragmentGameBinding
+import com.koniukhov.memorygame.util.GridSpacingItemDecoration
 import com.koniukhov.memorygame.viewmodels.GameViewModel
+
+private const val MARGIN = 10
 
 class GameFragment: Fragment() {
     private var _binding: FragmentGameBinding? = null
     private val binding get() =  _binding!!
     private val gameViewModel: GameViewModel by activityViewModels()
+    private lateinit var adapter: CardAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,52 +30,51 @@ class GameFragment: Fragment() {
     ): View {
         _binding = FragmentGameBinding.inflate(inflater, container, false)
 
-        return binding.root
-    }
+        gameViewModel.initCards()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        createGrid()
+        val manager = binding.cardRecycler.layoutManager as GridLayoutManager
+        manager.spanCount = gameViewModel.numCol
+
+        binding.cardRecycler.addItemDecoration(GridSpacingItemDecoration(gameViewModel.numCol,
+            MARGIN, true))
+
+        adapter = CardAdapter(){
+            gameViewModel.selectCard(it)
+        }
+
+        binding.cardRecycler.adapter = adapter
+
+        gameViewModel.cards.observe(viewLifecycleOwner){ cardList ->
+
+            adapter.submitList(cardList.map { it.copy() })
+
+            if (gameViewModel.isGameOver()){
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.win_title))
+                    .setMessage(getString(R.string.win_text))
+                    .setNegativeButton(getString(R.string.dialog_negative_btn)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(getString(R.string.dialog_positive_btn)) { dialog, _ ->
+                        refreshFragment()
+                    }
+                    .show()
+            }
+        }
+
+        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        gameViewModel.reset()
     }
 
-    private fun createGrid(){
-
-        when(gameViewModel.numRow){
-            GridSize.GRID_3_2.row -> {
-                inflateViews(R.layout.block_3_2)
-            }
-            GridSize.GRID_4_3.row ->{
-                inflateViews(R.layout.block_4_3)
-            }
-            GridSize.GRID_5_4.row ->{
-                inflateViews(R.layout.block_5_4)
-            }
-            GridSize.GRID_8_7.row ->{
-                inflateViews(R.layout.block_8_7)
-            }
-            GridSize.GRID_9_8.row ->{
-                inflateViews(R.layout.block_9_8)
-            }
-        }
-    }
-
-    private fun inflateViews(resource: Int){
-        for (r in 1..gameViewModel.numRow){
-            val linearLayout = LinearLayout(requireContext())
-            linearLayout.orientation = LinearLayout.HORIZONTAL
-            linearLayout.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-            for (c in 1..gameViewModel.numCol){
-                val block: RelativeLayout = layoutInflater.inflate(resource, null) as RelativeLayout
-                block.findViewById<ImageView>(R.id.image).setImageResource(R.drawable.block1)
-                linearLayout.addView(block)
-            }
-            binding.gameRoot.addView(linearLayout)
-        }
+    private fun refreshFragment(){
+        val navController = findNavController()
+//        val id = navController.currentDestination?.id
+//        navController.popBackStack(id!!,true)
+        navController.navigate(R.id.action_gameFragment_to_homeFragment)
     }
 }
