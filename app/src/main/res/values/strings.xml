@@ -8,4 +8,9 @@
     <string name="grid_6_5">6x5</string>
     <string name="grid_8_7">8x7</string>
     <string name="grid_9_8">9x8</string>
+
+    <string name="win_title">You won</string>
+    <string name="win_text">Want to try your hand again?</string>
+    <string name="dialog_negative_btn">No</string>
+    <string name="dialog_positive_btn">Yes</string>
 </resources>
