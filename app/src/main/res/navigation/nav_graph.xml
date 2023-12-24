@@ -15,5 +15,9 @@
     <fragment
         android:id="@+id/gameFragment"
         android:name="com.koniukhov.memorygame.fragments.GameFragment"
-        android:label="GameFragment" />
+        android:label="GameFragment" >
+        <action
+            android:id="@+id/action_gameFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>
