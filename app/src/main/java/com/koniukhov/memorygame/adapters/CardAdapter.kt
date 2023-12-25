@@ -20,16 +20,17 @@ class CardAdapter(private val onClick: (Card) -> Unit
             imageView.setOnClickListener{
                 onClick(card)
             }
-//            if (card.isFlipped){
-//                imageView.setImageResource(card.resId)
-//            }else{
-//                imageView.setImageResource(R.drawable.card_back)
-//            }
             if (card.isFlipped){
-                imageView.setImageResource(R.drawable.card_back)
-            }else{
                 imageView.setImageResource(card.resId)
+            }else{
+                imageView.setImageResource(R.drawable.card_back)
             }
+            //TODO delete
+//            if (card.isFlipped){
+//                imageView.setImageResource(R.drawable.card_back)
+//            }else{
+//                imageView.setImageResource(card.resId)
+//            }
         }
     }
 
