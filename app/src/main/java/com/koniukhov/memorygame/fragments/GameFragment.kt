@@ -28,53 +28,74 @@ class GameFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        gameViewModel.reset()
         _binding = FragmentGameBinding.inflate(inflater, container, false)
 
         gameViewModel.initCards()
+        setRecyclerSpanCount()
+        addRecyclerItemDecoration()
+        initAdapter()
+        observeCards()
 
-        val manager = binding.cardRecycler.layoutManager as GridLayoutManager
-        manager.spanCount = gameViewModel.numCol
+        return binding.root
+    }
 
-        binding.cardRecycler.addItemDecoration(GridSpacingItemDecoration(gameViewModel.numCol,
-            MARGIN, true))
-
-        adapter = CardAdapter(){
+    private fun initAdapter() {
+        adapter = CardAdapter() {
             gameViewModel.selectCard(it)
         }
 
         binding.cardRecycler.adapter = adapter
+    }
 
-        gameViewModel.cards.observe(viewLifecycleOwner){ cardList ->
+    private fun addRecyclerItemDecoration() {
+        binding.cardRecycler.addItemDecoration(
+            GridSpacingItemDecoration(
+                gameViewModel.numCol,
+                MARGIN, true
+            )
+        )
+    }
+
+    private fun setRecyclerSpanCount() {
+        val manager = binding.cardRecycler.layoutManager as GridLayoutManager
+        manager.spanCount = gameViewModel.numCol
+    }
+
+    private fun observeCards() {
+        gameViewModel.cards.observe(viewLifecycleOwner) { cardList ->
 
             adapter.submitList(cardList.map { it.copy() })
 
-            if (gameViewModel.isGameOver()){
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(getString(R.string.win_title))
-                    .setMessage(getString(R.string.win_text))
-                    .setNegativeButton(getString(R.string.dialog_negative_btn)) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.dialog_positive_btn)) { dialog, _ ->
-                        refreshFragment()
-                    }
-                    .show()
+            if (gameViewModel.isGameOver()) {
+                showDialog()
             }
         }
+    }
 
-        return binding.root
+    private fun showDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.win_title))
+            .setMessage(getString(R.string.win_text))
+            .setNegativeButton(getString(R.string.dialog_negative_btn)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.dialog_positive_btn)) { dialog, _ ->
+                dialog.dismiss()
+                refreshFragment()
+            }
+            .show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        gameViewModel.reset()
     }
 
     private fun refreshFragment(){
         val navController = findNavController()
-//        val id = navController.currentDestination?.id
-//        navController.popBackStack(id!!,true)
-        navController.navigate(R.id.action_gameFragment_to_homeFragment)
+        val id = navController.currentDestination?.id
+        navController.popBackStack(id!!,true)
+        navController.navigate(id)
     }
 }
