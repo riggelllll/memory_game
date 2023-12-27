@@ -18,7 +18,7 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
     var numCol = 0
         private set
 
-    private var uniqueCards: MutableSet<Int> = mutableSetOf()
+    private var uniqueResIds: MutableSet<Int> = mutableSetOf()
 
     var cards =  MutableLiveData<List<Card>>()
         private set
@@ -35,20 +35,20 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
 
     private fun setUniqueCards(){
         val gridSize = numRow * numCol
-        val uniqueCardsNum = gridSize / 2
+        val uniqueIdsNum = gridSize / 2
 
         do {
             val rNum = Random.nextInt(0, iconsIds.size)
-            uniqueCards.add(iconsIds[rNum])
-        }while (uniqueCards.size != uniqueCardsNum)
+            uniqueResIds.add(iconsIds[rNum])
+        }while (uniqueResIds.size != uniqueIdsNum)
     }
 
     private fun setCards(){
         val cardsList = mutableListOf<Card>()
 
-        for ( (i, r) in (0 until  numCol * numRow step 2).zip(0 until  uniqueCards.size)){
-            cardsList.add(Card(i, uniqueCards.elementAt(r)))
-            cardsList.add(Card(i + 1, uniqueCards.elementAt(r)))
+        for ( (i, r) in (0 until  numCol * numRow step 2).zip(0 until  uniqueResIds.size)){
+            cardsList.add(Card(i, uniqueResIds.elementAt(r)))
+            cardsList.add(Card(i + 1, uniqueResIds.elementAt(r)))
         }
         cardsList.shuffle()
         cards.value = cardsList
@@ -61,11 +61,11 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
 
     fun reset() {
         pairsFound.value = 0
-        uniqueCards = mutableSetOf()
+        uniqueResIds = mutableSetOf()
     }
 
     fun isGameOver(): Boolean{
-        return pairsFound.value == uniqueCards.size
+        return pairsFound.value == uniqueResIds.size
     }
 
     fun selectCard(card: Card){
