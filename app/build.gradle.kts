@@ -1,3 +1,5 @@
+import org.gradle.language.nativeplatform.internal.Dimensions.unitTestVariants
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -58,6 +60,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.mockito:mockito-core:2.2.0")
 
     androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
