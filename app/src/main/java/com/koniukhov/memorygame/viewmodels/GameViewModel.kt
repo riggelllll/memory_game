@@ -68,7 +68,7 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
         return pairsFound.value == uniqueResIds.size
     }
 
-    fun selectCard(card: Card){
+    fun selectCard(card: Card, handler: Handler){
         if (card.isMatched || card.isFlipped) return
 
         val currentCards = cards.value!!.toMutableList()
@@ -85,7 +85,7 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
                 pairsFound.value = pairsFound.value?.plus(1)
             } else {
                 currentCards[selectedCardIndex].flip()
-                Handler(Looper.getMainLooper()).postDelayed({
+                handler.postDelayed({
                     currentCards[selectedCardIndex].flip()
                     firstFlipped?.flip()
                     cards.value = currentCards
