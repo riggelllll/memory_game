@@ -25,12 +25,6 @@ class CardAdapter(private val onClick: (Card) -> Unit
             }else{
                 imageView.setImageResource(R.drawable.card_back)
             }
-            //TODO delete
-//            if (card.isFlipped){
-//                imageView.setImageResource(R.drawable.card_back)
-//            }else{
-//                imageView.setImageResource(card.resId)
-//            }
         }
     }
 
