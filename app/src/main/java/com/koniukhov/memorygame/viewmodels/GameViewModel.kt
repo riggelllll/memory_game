@@ -18,6 +18,9 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
     var numCol = 0
         private set
 
+    var canClick = true
+    private set
+
     private var uniqueResIds: MutableSet<Int> = mutableSetOf()
 
     var cards =  MutableLiveData<List<Card>>()
@@ -85,10 +88,12 @@ class GameViewModel @Inject constructor(private val iconsIds: List<Int>) : ViewM
                 pairsFound.value = pairsFound.value?.plus(1)
             } else {
                 currentCards[selectedCardIndex].flip()
+                canClick = false
                 handler.postDelayed({
                     currentCards[selectedCardIndex].flip()
                     firstFlipped?.flip()
                     cards.value = currentCards
+                    canClick = true
                 }, DELAY)
             }
         }

@@ -44,7 +44,9 @@ class GameFragment: Fragment() {
 
     private fun initAdapter() {
         adapter = CardAdapter() {
-            gameViewModel.selectCard(it, Handler(Looper.getMainLooper()))
+            if (gameViewModel.canClick){
+                gameViewModel.selectCard(it, Handler(Looper.getMainLooper()))
+            }
         }
 
         binding.cardRecycler.adapter = adapter
